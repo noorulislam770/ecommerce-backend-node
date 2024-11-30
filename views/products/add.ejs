@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eCommerce App</title>
+    <!-- Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-white text-lg font-semibold">eCommerce</a>
+            <div>
+                <a href="/" class="text-white mr-4">Home</a>
+                <a href="/products" class="text-white mr-4">Products</a>
+                <a href="/cart" class="text-white mr-4">Cart</a>
+                <a href="/orders" class="text-white">Orders</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <h1 class="text-3xl font-semibold mb-4">Add New Product</h1>
+
+    <form action="/products/add" method="POST" class="bg-white p-6 rounded shadow-md">
+        <div class="mb-4">
+            <label for="name" class="block text-gray-700">Product Name</label>
+            <input type="text" id="name" name="name" required class="w-full p-2 mt-2 border border-gray-300 rounded">
+        </div>
+
+        <div class="mb-4">
+            <label for="description" class="block text-gray-700">Description</label>
+            <textarea id="description" name="description" required
+                class="w-full p-2 mt-2 border border-gray-300 rounded"></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label for="price" class="block text-gray-700">Price</label>
+            <input type="number" id="price" name="price" required
+                class="w-full p-2 mt-2 border border-gray-300 rounded">
+        </div>
+
+        <div class="mb-4">
+            <label for="category" class="block text-gray-700">Category</label>
+            <input type="text" id="category" name="category" required
+                class="w-full p-2 mt-2 border border-gray-300 rounded">
+        </div>
+
+        <div class="mb-4">
+            <label for="tags" class="block text-gray-700">Tags</label>
+            <input type="text" id="tags" name="tags" class="w-full p-2 mt-2 border border-gray-300 rounded">
+        </div>
+
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add Product</button>
+    </form>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center py-4">
+        <p>&copy; 2024 eCommerce App</p>
+    </footer>
+</body>
+
+</html>

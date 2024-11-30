@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eCommerce App</title>
+    <!-- Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-white text-lg font-semibold">eCommerce</a>
+            <div>
+                <a href="/" class="text-white mr-4">Home</a>
+                <a href="/products" class="text-white mr-4">Products</a>
+                <a href="/cart" class="text-white mr-4">Cart</a>
+                <a href="/orders" class="text-white">Orders</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto my-8">
+
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">Welcome to Our eCommerce Platform</h1>
+        <div class="flex justify-center space-x-8">
+            <div class="bg-white p-6 shadow-lg rounded-md w-1/3">
+                <h2 class="text-2xl font-semibold mb-4">Browse Products</h2>
+                <p class="text-gray-700 mb-4">Explore a wide range of products at affordable prices.</p>
+                <a href="/products" class="text-blue-500">View Products</a>
+            </div>
+
+            <div class="bg-white p-6 shadow-lg rounded-md w-1/3">
+                <h2 class="text-2xl font-semibold mb-4">Your Cart</h2>
+                <p class="text-gray-700 mb-4">Check out the items you’ve added to your cart.</p>
+                <a href="/cart" class="text-blue-500">Go to Cart</a>
+            </div>
+        </div>
+
+        <!-- The dynamic content will be injected here -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center py-4">
+        <p>&copy; 2024 eCommerce App</p>
+    </footer>
+</body>
+
+</html>
