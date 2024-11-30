@@ -6,6 +6,8 @@ const productRoutes = require("./src/routes/productRoutes");
 const cartRoutes = require("./src/routes/cartRoutes");
 const orderRoutes = require("./src/routes/orderRoutes");
 const adminRoutes = require("./src/routes/adminRoutes");
+const cookieParser = require("cookie-parser");
+const attachUserToViews = require("./src/middleware/userMiddleware");
 const {
   authenticateJWT,
   authorizeRoles,
@@ -14,33 +16,48 @@ dotenv.config();
 
 const app = express();
 
+app.use(cookieParser());
+app.use(attachUserToViews);
+app.use(authenticateJWT);
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Test endpoint
 app.get("/", (req, res) => {
-  res.render("index");
+  user = req.user;
+  res.render("index", { user: user });
 });
 
-app.get("/orders", async (req, res) => {
-  const userId = 1; // Replace with req.user.id when authentication is added
-  try {
-    const [orders] = await pool.query(
-      `SELECT o.id, o.status, o.created_at, 
+app.get("/auth/logout", authenticateJWT, (req, res) => {
+  // Clear the JWT token from the cookies
+  res.clearCookie("token"); // If using cookies to store the token
+  res.redirect("/login"); // Redirect to homepage or login page
+});
+
+app.get(
+  "/orders",
+  authenticateJWT,
+  authorizeRoles("customer"),
+  async (req, res) => {
+    const userId = req.user.id; // Replace with req.user.id when authentication is added
+    try {
+      const [orders] = await pool.query(
+        `SELECT o.id, o.status, o.created_at, 
        SUM(oi.quantity * p.price) AS total 
        FROM orders o 
        JOIN order_items oi ON o.id = oi.order_id 
        JOIN products p ON oi.product_id = p.id 
        WHERE o.user_id = ? 
        GROUP BY o.id`,
-      [userId]
-    );
-    res.render("orders/index", { orders });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching orders", error });
+        [userId]
+      );
+      res.render("orders/index", { orders, user: req.user });
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching orders", error });
+    }
   }
-});
+);
 
 // Authentication routes
 app.use("/api/auth", authRoutes);
@@ -60,16 +77,19 @@ app.get("/login", (req, res) => {
 // products routes for testing using form input
 
 app.get("/products", async (req, res) => {
+  user = req.user;
+  console.log(user);
   try {
     const [products] = await pool.query("SELECT * FROM products");
-    res.render("products/index", { products });
+
+    res.render("products/index", { products, user });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching products", error });
+    res.status(500).json({ message: "Error fetching products", error, user });
   }
 });
 
-app.get("/cart", async (req, res) => {
-  const userId = 1; // Replace with req.user.id when authentication is added
+app.get("/cart", authenticateJWT, async (req, res) => {
+  const userId = req.user.id; // Replace with req.user.id when authentication is added
   try {
     const [cartItems] = await pool.query(
       `SELECT ci.id, p.name AS product_name, p.price, ci.quantity 
@@ -78,16 +98,21 @@ app.get("/cart", async (req, res) => {
        WHERE ci.cart_id = (SELECT id FROM carts WHERE user_id = ?)`,
       [userId]
     );
-    res.render("cart/index", { cartItems });
+    res.render("cart/index", { cartItems, user: req.user });
   } catch (error) {
     res.status(500).json({ message: "Error fetching cart items", error });
   }
 });
 
 // Render add product form
-app.get("/products/add", (req, res) => {
-  res.render("products/add");
-});
+app.get(
+  "/products/add",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  (req, res) => {
+    res.render("products/add");
+  }
+);
 
 app.get(
   "/products/edit/:id",
@@ -111,6 +136,7 @@ app.get(
 );
 
 app.get("/products/:id", async (req, res) => {
+  const user = req.user;
   try {
     const [product] = await pool.query("SELECT * FROM products WHERE id = ?", [
       req.params.id,
@@ -119,7 +145,7 @@ app.get("/products/:id", async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     } else {
       console.log(product);
-      res.render("products/product", { product: product[0] });
+      res.render("products/product", { product: product[0], user });
     }
   } catch (error) {
     res.status(500).json({ message: "Error fetching product", error });

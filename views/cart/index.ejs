@@ -11,18 +11,7 @@
 
 <body class="bg-gray-100">
     <!-- Navbar -->
-    <nav class="bg-gray-800 p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="/" class="text-white text-lg font-semibold">eCommerce</a>
-            <div>
-                <a href="/" class="text-white mr-4">Home</a>
-                <a href="/products" class="text-white mr-4">Products</a>
-                <a href="/cart" class="text-white mr-4">Cart</a>
-                <a href="/orders" class="text-white">Orders</a>
-                <a href="/dashboard" class="text-white">Orders</a>
-            </div>
-        </div>
-    </nav>
+    <%- include('../nav'); %>
 
     <div class="container mx-auto my-8">
         <h1 class="text-3xl font-semibold mb-4">Your Cart</h1>

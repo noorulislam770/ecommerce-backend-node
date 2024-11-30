@@ -10,7 +10,7 @@ router.get(
   authenticateJWT,
   authorizeRoles("admin"),
   (req, res) => {
-    res.render("admin/dashboard");
+    res.render("admin/dashboard", { user: req.user });
   }
 );
 

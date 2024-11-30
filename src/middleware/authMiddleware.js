@@ -2,19 +2,21 @@ const jwt = require("jsonwebtoken");
 
 // Middleware to verify JWT and attach user to the request
 const authenticateJWT = (req, res, next) => {
-  const token = req.header("Authorization")?.split(" ")[1];
+  const token =
+    req.cookies?.token || req.header("Authorization")?.split(" ")[1];
+
   if (!token) {
-    return res
-      .status(401)
-      .json({ message: "Access denied. No token provided." });
+    req.user = null; // No user if no token
+    return next();
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Attach user info (id, role) to the request
+    req.user = decoded; // Attach user data to req.user
     next();
   } catch (error) {
-    res.status(403).json({ message: "Invalid token" });
+    req.user = null; // Invalid token
+    next();
   }
 };
 

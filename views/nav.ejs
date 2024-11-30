@@ -1,0 +1,30 @@
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-white text-lg font-semibold">eCommerce</a>
+
+            <div>
+                <!-- Links always visible -->
+                <a href="/" class="text-white mr-4">Home</a>
+                <a href="/products" class="text-white mr-4">Products</a>
+
+                <!-- Links for logged-in users -->
+                <% if (user) { %>
+                <% if (user.role === 'customer') { %>
+                <a href="/cart" class="text-white mr-4">Cart</a>
+                <a href="/orders" class="text-white mr-4">Orders</a>
+                <% } else if (user.role === 'admin') { %>
+                <a href="/api/admin/dashboard" class="text-white mr-4">Dashboard</a>
+                <% } %>
+
+                <!-- Display username and logout -->
+                <span class="text-white mr-4">Hello, <%= user.username %></span>
+                <a href="/auth/logout" class="bg-red-500 text-white px-4 py-2 rounded">Logout</a>
+                <% } else { %>
+                <!-- Links for non-logged-in users -->
+                <a href="/login" class="text-white">Login</a>
+                <% } %>
+            </div>
+        </div>
+    </nav>

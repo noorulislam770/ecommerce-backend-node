@@ -8,7 +8,7 @@ const {
 
 // View all products
 
-router.get("/", authenticateJWT, authorizeRoles("admin"), async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const [products] = await pool.query("SELECT * FROM products");
     res.status(200).json(products);

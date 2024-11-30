@@ -1,50 +1,60 @@
 const express = require("express");
 const pool = require("../config/db");
+const {
+  authenticateJWT,
+  authorizeRoles,
+} = require("../middleware/authMiddleware");
 const router = express.Router();
 
-router.get("/place", async (req, res) => {
-  const userId = 1; // Replace with req.user.id when authentication is added
-  try {
-    const [cartItems] = await pool.query(
-      `SELECT ci.product_id, ci.quantity 
+router.get(
+  "/place",
+  authenticateJWT,
+  authorizeRoles("customer"),
+  async (req, res) => {
+    try {
+      user = req.user;
+      const [cartItems] = await pool.query(
+        `SELECT ci.product_id, ci.quantity 
        FROM cart_items ci 
        WHERE ci.cart_id = (SELECT id FROM carts WHERE user_id = ?)`,
-      [userId]
-    );
-
-    if (cartItems.length === 0) {
-      return res.redirect("/cart");
-    }
-
-    // Create a new order
-    const [result] = await pool.query(
-      "INSERT INTO orders (user_id, status) VALUES (?, 'pending')",
-      [userId]
-    );
-    const orderId = result.insertId;
-
-    // Add cart items to order
-    for (const item of cartItems) {
-      await pool.query(
-        "INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)",
-        [orderId, item.product_id, item.quantity]
+        [user.id]
       );
+
+      console.log(user, cartItems);
+      if (cartItems.length === 0) {
+        return res.redirect("/cart");
+      }
+
+      // Create a new order
+      const [result] = await pool.query(
+        "INSERT INTO orders (user_id, status) VALUES (?, 'pending')",
+        [user.id]
+      );
+      const orderId = result.insertId;
+
+      // Add cart items to order
+      for (const item of cartItems) {
+        await pool.query(
+          "INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)",
+          [orderId, item.product_id, item.quantity]
+        );
+      }
+
+      // Clear the cart
+      await pool.query(
+        "DELETE FROM cart_items WHERE cart_id = (SELECT id FROM carts WHERE user_id = ?)",
+        [user.id]
+      );
+
+      res.redirect("/orders", { user: req.user });
+    } catch (error) {
+      res.status(500).json({ message: "Error placing order", error });
     }
-
-    // Clear the cart
-    await pool.query(
-      "DELETE FROM cart_items WHERE cart_id = (SELECT id FROM carts WHERE user_id = ?)",
-      [userId]
-    );
-
-    res.redirect("/orders");
-  } catch (error) {
-    res.status(500).json({ message: "Error placing order", error });
   }
-});
+);
 
 router.get("/", async (req, res) => {
-  const userId = 1; // Replace with req.user.id when authentication is added
+  const userId = req.user.id; // Replace with req.user.id when authentication is added
   try {
     const [orders] = await pool.query(
       `SELECT o.id, o.status, o.created_at, 
