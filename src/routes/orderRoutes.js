@@ -2,6 +2,66 @@ const express = require("express");
 const pool = require("../config/db");
 const router = express.Router();
 
+router.get("/place", async (req, res) => {
+  const userId = 1; // Replace with req.user.id when authentication is added
+  try {
+    const [cartItems] = await pool.query(
+      `SELECT ci.product_id, ci.quantity 
+       FROM cart_items ci 
+       WHERE ci.cart_id = (SELECT id FROM carts WHERE user_id = ?)`,
+      [userId]
+    );
+
+    if (cartItems.length === 0) {
+      return res.redirect("/cart");
+    }
+
+    // Create a new order
+    const [result] = await pool.query(
+      "INSERT INTO orders (user_id, status) VALUES (?, 'pending')",
+      [userId]
+    );
+    const orderId = result.insertId;
+
+    // Add cart items to order
+    for (const item of cartItems) {
+      await pool.query(
+        "INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)",
+        [orderId, item.product_id, item.quantity]
+      );
+    }
+
+    // Clear the cart
+    await pool.query(
+      "DELETE FROM cart_items WHERE cart_id = (SELECT id FROM carts WHERE user_id = ?)",
+      [userId]
+    );
+
+    res.redirect("/orders");
+  } catch (error) {
+    res.status(500).json({ message: "Error placing order", error });
+  }
+});
+
+router.get("/", async (req, res) => {
+  const userId = 1; // Replace with req.user.id when authentication is added
+  try {
+    const [orders] = await pool.query(
+      `SELECT o.id, o.status, o.created_at, 
+       SUM(oi.quantity * p.price) AS total 
+       FROM orders o 
+       JOIN order_items oi ON o.id = oi.order_id 
+       JOIN products p ON oi.product_id = p.id 
+       WHERE o.user_id = ? 
+       GROUP BY o.id`,
+      [userId]
+    );
+    res.render("orders/index", { orders });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching orders", error });
+  }
+});
+
 // Place an order
 router.post("/", async (req, res) => {
   const { userId } = req.body;

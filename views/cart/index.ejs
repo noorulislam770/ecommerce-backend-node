@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eCommerce App</title>
+    <!-- Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-white text-lg font-semibold">eCommerce</a>
+            <div>
+                <a href="/" class="text-white mr-4">Home</a>
+                <a href="/products" class="text-white mr-4">Products</a>
+                <a href="/cart" class="text-white mr-4">Cart</a>
+                <a href="/orders" class="text-white">Orders</a>
+                <a href="/dashboard" class="text-white">Orders</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto my-8">
+        <h1 class="text-3xl font-semibold mb-4">Your Cart</h1>
+
+        <% if (cartItems.length === 0) { %>
+        <p class="text-gray-600">Your cart is empty. <a href="/products" class="text-blue-500">Browse Products</a></p>
+        <% } else { %>
+        <table class="table-auto w-full bg-white shadow-md rounded">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="px-4 py-2">Product</th>
+                    <th class="px-4 py-2">Price</th>
+                    <th class="px-4 py-2">Quantity</th>
+                    <th class="px-4 py-2">Subtotal</th>
+                    <th class="px-4 py-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% cartItems.forEach(item => { %>
+                <tr>
+                    <td class="border px-4 py-2"><%= item.product_name %></td>
+                    <td class="border px-4 py-2">$<%= item.price %></td>
+                    <td class="border px-4 py-2">
+                        <form action="/api/cart/update/<%= item.id %>" method="POST">
+                            <input type="number" name="quantity" value="<%= item.quantity %>" min="1"
+                                class="w-16 p-1 border rounded">
+                            <button type="submit" class="bg-blue-500 text-white px-2 py-1 rounded">Update</button>
+                        </form>
+                    </td>
+                    <td class="border px-4 py-2">$<%= (item.price * item.quantity).toFixed(2) %></td>
+                    <td class="border px-4 py-2">
+                        <form action="/api/cart/remove/<%= item.id %>" method="POST">
+                            <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <div class="mt-4">
+            <a href="/api/orders/place" class="bg-green-500 text-white px-4 py-2 rounded">Proceed to Checkout</a>
+        </div>
+        <% } %>
+    </div>
+
+
+
+
+
+    <footer class="bg-gray-800 text-white text-center py-4">
+        <p>&copy; 2024 eCommerce App</p>
+    </footer>
+</body>
+
+</html>

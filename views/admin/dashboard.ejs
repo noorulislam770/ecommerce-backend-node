@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eCommerce App</title>
+    <!-- Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-white text-lg font-semibold">eCommerce</a>
+            <div>
+                <a href="/" class="text-white mr-4">Home</a>
+                <a href="/products" class="text-white mr-4">Products</a>
+                <a href="/cart" class="text-white mr-4">Cart</a>
+                <a href="/orders" class="text-white">Orders</a>
+                <a href="/dashboard" class="text-white">Orders</a>
+            </div>
+        </div>
+    </nav>
+
+    < class="container mx-auto my-8">
+        <h1 class="text-3xl font-semibold mb-4">Admin Dashboard</h1>
+
+        <div>
+            <h2 class="text-2xl font-semibold mb-2">Manage Products</h2>
+            <a href="/products/add" class="bg-blue-500 text-white px-4 py-2 rounded">Add Product</a>
+        </div>
+
+        <div class="mt-6">
+            <h2 class="text-2xl font-semibold mb-2">View Orders</h2>
+            <a href="/orders" class="bg-green-500 text-white px-4 py-2 rounded">View Orders</a>
+        </div>
+
+
+        <footer class="bg-gray-800 text-white text-center py-4">
+            <p>&copy; 2024 eCommerce App</p>
+        </footer>
+</body>
+
+</html>

@@ -2,10 +2,29 @@ const express = require("express");
 const pool = require("../config/db");
 const router = express.Router();
 
+router.get("/", async (req, res) => {
+  const userId = 1; // Replace with req.user.id when authentication is added
+  try {
+    const [cartItems] = await pool.query(
+      `SELECT ci.id, p.name AS product_name, p.price, ci.quantity 
+       FROM cart_items ci 
+       JOIN products p ON ci.product_id = p.id 
+       WHERE ci.cart_id = (SELECT id FROM carts WHERE user_id = ?)`,
+      [userId]
+    );
+    res.render("cart/index", { cartItems });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching cart items", error });
+  }
+});
+
 // Add a product to the cart
 router.post("/add/:productId", async (req, res) => {
   const { productId } = req.params;
-  const { userId, quantity } = req.body;
+  let { userId, quantity } = req.body;
+  userId = 1;
+
+  console.log("pID = ", productId, "UID = ", userId, "QTY = ", quantity);
 
   try {
     // Check if cart exists for the user, if not, create one
@@ -37,7 +56,7 @@ router.post("/add/:productId", async (req, res) => {
 });
 
 // Update quantity of a product in the cart
-router.put("/update/:itemId", async (req, res) => {
+router.post("/update/:itemId", async (req, res) => {
   const { itemId } = req.params;
   const { quantity } = req.body;
 

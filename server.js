@@ -5,6 +5,11 @@ const authRoutes = require("./src/routes/auth");
 const productRoutes = require("./src/routes/productRoutes");
 const cartRoutes = require("./src/routes/cartRoutes");
 const orderRoutes = require("./src/routes/orderRoutes");
+const adminRoutes = require("./src/routes/adminRoutes");
+const {
+  authenticateJWT,
+  authorizeRoles,
+} = require("./src/middleware/authMiddleware");
 dotenv.config();
 
 const app = express();
@@ -18,11 +23,31 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
+app.get("/orders", async (req, res) => {
+  const userId = 1; // Replace with req.user.id when authentication is added
+  try {
+    const [orders] = await pool.query(
+      `SELECT o.id, o.status, o.created_at, 
+       SUM(oi.quantity * p.price) AS total 
+       FROM orders o 
+       JOIN order_items oi ON o.id = oi.order_id 
+       JOIN products p ON oi.product_id = p.id 
+       WHERE o.user_id = ? 
+       GROUP BY o.id`,
+      [userId]
+    );
+    res.render("orders/index", { orders });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching orders", error });
+  }
+});
+
 // Authentication routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/register", (req, res) => {
   res.render("register");
@@ -43,10 +68,47 @@ app.get("/products", async (req, res) => {
   }
 });
 
+app.get("/cart", async (req, res) => {
+  const userId = 1; // Replace with req.user.id when authentication is added
+  try {
+    const [cartItems] = await pool.query(
+      `SELECT ci.id, p.name AS product_name, p.price, ci.quantity 
+       FROM cart_items ci 
+       JOIN products p ON ci.product_id = p.id 
+       WHERE ci.cart_id = (SELECT id FROM carts WHERE user_id = ?)`,
+      [userId]
+    );
+    res.render("cart/index", { cartItems });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching cart items", error });
+  }
+});
+
 // Render add product form
 app.get("/products/add", (req, res) => {
   res.render("products/add");
 });
+
+app.get(
+  "/products/edit/:id",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  async (req, res) => {
+    try {
+      const [product] = await pool.query(
+        "SELECT * FROM products WHERE id = ?",
+        [req.params.id]
+      );
+      if (product.length === 0) {
+        return res.status(404).json({ message: "Product not found" });
+      } else {
+        res.render("products/edit", { product: product[0] });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching product", error });
+    }
+  }
+);
 
 app.get("/products/:id", async (req, res) => {
   try {

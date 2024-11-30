@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eCommerce App</title>
+    <title>Update Product</title>
     <!-- Tailwind CSS via CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
@@ -24,48 +24,43 @@
     </nav>
 
     <div class="container mx-auto my-8">
+        <h1 class="text-3xl font-semibold mb-4">Update Product</h1>
 
-
-
-        <h1 class="text-3xl font-semibold mb-4">Add New Product</h1>
-
-        <form action="/products/add" method="POST" class="bg-white p-6 rounded shadow-md">
+        <!-- Form -->
+        <form action="/api/products/update/<%= product.id %>" method="POST" class="bg-white p-6 rounded shadow-md">
             <div class="mb-4">
                 <label for="name" class="block text-gray-700">Product Name</label>
-                <input type="text" id="name" name="name" required
-                    class="w-full p-2 mt-2 border border-gray-300 rounded">
+                <input type="text" id="name" name="name" required class="w-full p-2 mt-2 border border-gray-300 rounded"
+                    value="<%= product.name %>">
             </div>
 
             <div class="mb-4">
                 <label for="description" class="block text-gray-700">Description</label>
                 <textarea id="description" name="description" required
-                    class="w-full p-2 mt-2 border border-gray-300 rounded"></textarea>
+                    class="w-full p-2 mt-2 border border-gray-300 rounded"><%= product.description %></textarea>
             </div>
 
             <div class="mb-4">
                 <label for="price" class="block text-gray-700">Price</label>
                 <input type="number" id="price" name="price" required
-                    class="w-full p-2 mt-2 border border-gray-300 rounded">
+                    class="w-full p-2 mt-2 border border-gray-300 rounded" value="<%= product.price %>">
             </div>
 
             <div class="mb-4">
                 <label for="category" class="block text-gray-700">Category</label>
                 <input type="text" id="category" name="category" required
-                    class="w-full p-2 mt-2 border border-gray-300 rounded">
+                    class="w-full p-2 mt-2 border border-gray-300 rounded" value="<%= product.category %>">
             </div>
 
             <div class="mb-4">
                 <label for="tags" class="block text-gray-700">Tags</label>
-                <input type="text" id="tags" name="tags" class="w-full p-2 mt-2 border border-gray-300 rounded">
+                <input type="text" id="tags" name="tags" class="w-full p-2 mt-2 border border-gray-300 rounded"
+                    value="<%= product.tags %>">
             </div>
 
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add Product</button>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Update Product</button>
         </form>
-
-
-
     </div>
-
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white text-center py-4">

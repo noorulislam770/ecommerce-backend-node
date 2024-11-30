@@ -25,29 +25,28 @@
     </nav>
 
     <div class="container mx-auto my-8">
-        <h1 class="text-3xl font-semibold mb-4">Product List</h1>
+        <h1 class="text-3xl font-semibold mb-4">Your Orders</h1>
 
-        <!-- Add product button (for admin) -->
-        <a href="/products/add" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">Add Product</a>
-
-        <!-- Product list -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <% products.forEach(product => { %>
-            <div class="bg-white p-4 shadow-md rounded">
-                <h2 class="text-xl font-semibold"><%= product.name %></h2>
-                <p class="text-gray-600"><%= product.description %></p>
-                <p class="text-green-500 font-semibold">$<%= product.price %></p>
-                <a href="/products/<%= product.id %>" class="text-blue-500 mt-2 inline-block">View Details</a>
-            </div>
+        <% if (orders.length === 0) { %>
+        <p class="text-gray-600">You have no orders. <a href="/products" class="text-blue-500">Start Shopping</a></p>
+        <% } else { %>
+        <ul class="bg-white shadow-md rounded">
+            <% orders.forEach(order => { %>
+            <li class="border-b px-4 py-2">
+                <h2 class="text-lg font-semibold">Order #<%= order.id %> - <%= order.status %></h2>
+                <p class="text-gray-600">Placed on: <%= order.created_at %></p>
+                <p class="text-gray-600">Total: $<%= order.total %></p>
+            </li>
             <% }) %>
-        </div>
+        </ul>
+        <% } %>
 
-    </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white text-center py-4">
-        <p>&copy; 2024 eCommerce App</p>
-    </footer>
+
+
+        <footer class="bg-gray-800 text-white text-center py-4">
+            <p>&copy; 2024 eCommerce App</p>
+        </footer>
 </body>
 
 </html>

@@ -23,28 +23,29 @@
         </div>
     </nav>
 
+    <div class="container mx-auto my-8">
 
-    <div class="bg-white p-6 shadow-lg rounded-md">
-        <h1 class="text-3xl font-bold mb-4"><%= product.name %></h1>
-        <p class="text-gray-600 mb-4"><%= product.description %></p>
-        <p class="text-green-500 font-semibold text-xl">$<%= product.price %></p>
-        <p class="text-gray-700"><strong>Category:</strong> <%= product.category %></p>
-        <% if (product.tags) { %>
-        <p class="text-gray-700"><strong>Tags:</strong> <%= product.tags %></p>
-        <% } %>
+        <div class="bg-white p-6 shadow-lg rounded-md">
+            <h1 class="text-3xl font-bold mb-4"><%= product.name %></h1>
+            <p class="text-gray-600 mb-4"><%= product.description %></p>
+            <p class="text-green-500 font-semibold text-xl">$<%= product.price %></p>
+            <p class="text-gray-700"><strong>Category:</strong> <%= product.category %></p>
+            <% if (product.tags) { %>
+            <p class="text-gray-700"><strong>Tags:</strong> <%= product.tags %></p>
+            <% } %>
 
-        <div class="mt-6">
-            <form action="/cart/add/<%= product.id %>" method="POST" class="inline-block">
-                <label for="quantity" class="text-gray-700 mr-2">Quantity:</label>
-                <input type="number" id="quantity" name="quantity" value="1" min="1" required
-                    class="w-16 p-1 border rounded">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add to Cart</button>
-            </form>
-            <a href="/products" class="bg-gray-500 text-white px-4 py-2 rounded ml-4">Back to Products</a>
+            <div class="mt-6">
+                <form action="/api/cart/add/<%= product.id %>" method="POST" class="inline-block">
+                    <label for="quantity" class="text-gray-700 mr-2">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" required
+                        class="w-16 p-1 border rounded">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add to Cart</button>
+                </form>
+                <a href="/products" class="bg-gray-500 text-white px-4 py-2 rounded ml-4">Back to Products</a>
+            </div>
         </div>
+
     </div>
-
-
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white text-center py-4">
