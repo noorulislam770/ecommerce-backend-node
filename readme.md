@@ -51,6 +51,7 @@ npm install
 Set up the .env file:
 ```
 ## env
+```bash
 Copy code
 PORT=5000
 DB_HOST=localhost
@@ -59,7 +60,7 @@ DB_PASSWORD=
 DB_NAME=ecommerce
 JWT_SECRET=rockpapersiccors
 JWT_EXPIRES_IN=1d
-
+```
 ```bash
 Copy code
 npm run migrate
