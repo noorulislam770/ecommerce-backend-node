@@ -6,6 +6,8 @@ const productRoutes = require("./src/routes/productRoutes");
 const cartRoutes = require("./src/routes/cartRoutes");
 const orderRoutes = require("./src/routes/orderRoutes");
 const adminRoutes = require("./src/routes/adminRoutes");
+const adminOrderRoutes = require("./src/routes/adminOrderRoutes");
+
 const cookieParser = require("cookie-parser");
 const attachUserToViews = require("./src/middleware/userMiddleware");
 const {
@@ -48,11 +50,11 @@ app.get(
        FROM orders o 
        JOIN order_items oi ON o.id = oi.order_id 
        JOIN products p ON oi.product_id = p.id 
-       WHERE o.user_id = ? 
+        WHERE o.user_id = ? 
        GROUP BY o.id`,
         [userId]
       );
-      res.render("orders/index", { orders, user: req.user });
+      res.render("orders/index", { orders: orders || [], user: req.user });
     } catch (error) {
       res.status(500).json({ message: "Error fetching orders", error });
     }
@@ -65,6 +67,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/admin/orders", adminOrderRoutes);
 
 app.get("/register", (req, res) => {
   res.render("register");
@@ -73,6 +76,53 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   res.render("login");
 });
+
+app.get(
+  "/admin/orders",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  async (req, res) => {
+    try {
+      const [orders] = await pool.query(
+        "SELECT * FROM orders WHERE status = 'pending' ORDER BY created_at DESC"
+      );
+
+      if (orders.length === 0) {
+        return res.status(404).json({ message: "No pending orders" });
+      }
+      console.log(orders);
+      res.render("admin/orders", {
+        orders: orders || [],
+        user: req.user,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching orders", error });
+    }
+  }
+);
+
+app.get(
+  "/admin/orders/:orderId",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  async (req, res) => {
+    try {
+      orderId = req.params.orderId;
+      order = await pool.query(
+        "SELECT * FROM orders WHERE id = ? ORDER BY created_at DESC",
+        orderId
+      );
+
+      if (orders.length === 0) {
+        return res.status(404).json({ message: "No pending orders" });
+      }
+
+      res.render("admin/orders", { order, user: req.user });
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching order details", error });
+    }
+  }
+);
 
 // products routes for testing using form input
 

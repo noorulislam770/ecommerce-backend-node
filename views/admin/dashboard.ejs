@@ -4,32 +4,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eCommerce App</title>
-    <!-- Tailwind CSS via CDN -->
+    <title>Admin Dashboard - eCommerce App</title>
+    <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-100">
-    <!-- Navbar -->
-    <%- include('../nav'); %>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="bg-gray-800 text-white w-64 p-4 flex flex-col">
+            <h2 class="text-2xl font-semibold mb-6">Admin Dashboard</h2>
+            <nav>
+                <ul>
+                    <li class="mb-4">
+                        <a href="/admin/dashboard" class="text-white hover:bg-gray-700 p-2 rounded block">Dashboard
+                            Home</a>
+                    </li>
+                    <li class="mb-4">
+                        <a href="/admin/products" class="text-white hover:bg-gray-700 p-2 rounded block">Manage
+                            Products</a>
+                    </li>
+                    <li class="mb-4">
+                        <a href="/admin/orders" class="text-white hover:bg-gray-700 p-2 rounded block">Manage Orders</a>
+                    </li>
+                    <li class="mt-auto">
+                        <a href="/auth/logout"
+                            class="bg-red-500 text-white px-4 py-2 rounded block text-center">Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
 
-    <div class="container mx-auto my-8">
-        <h1 class="text-3xl font-semibold mb-4">Admin Dashboard</h1>
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            <!-- Dashboard Header -->
+            <header class="mb-6">
+                <h1 class="text-3xl font-semibold">Welcome, Admin!</h1>
+                <p class="text-gray-600">Manage your eCommerce platform efficiently.</p>
+            </header>
 
-        <div>
-            <h2 class="text-2xl font-semibold mb-2">Manage Products</h2>
-            <a href="/products/add" class="bg-blue-500 text-white px-4 py-2 rounded">Add Product</a>
-        </div>
+            <!-- Section: Manage Products -->
+            <section class="mb-6">
+                <h2 class="text-2xl font-semibold mb-4">Manage Products</h2>
+                <a href="/products/add" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">Add
+                    Product</a>
 
-        <div class="mt-6">
-            <h2 class="text-2xl font-semibold mb-2">View Orders</h2>
-            <a href="/orders" class="bg-green-500 text-white px-4 py-2 rounded">View Orders</a>
-        </div>
+                <table class="w-full bg-white shadow-md rounded">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="px-4 py-2">ID</th>
+                            <th class="px-4 py-2">Name</th>
+                            <th class="px-4 py-2">Price</th>
+                            <th class="px-4 py-2">Category</th>
+                            <th class="px-4 py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% products.forEach(product => { %>
+                        <tr class="border-b">
+                            <td class="px-4 py-2"><%= product.id %></td>
+                            <td class="px-4 py-2"><%= product.name %></td>
+                            <td class="px-4 py-2">$<%= product.price %></td>
+                            <td class="px-4 py-2"><%= product.category %></td>
+                            <td class="px-4 py-2">
+                                <a href="/admin/products/edit/<%= product.id %>"
+                                    class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</a>
+                                <form action="/admin/products/delete/<%= product.id %>" method="POST"
+                                    class="inline-block">
+                                    <button type="submit"
+                                        class="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </section>
 
-
-        <footer class="bg-gray-800 text-white text-center py-4">
-            <p>&copy; 2024 eCommerce App</p>
-        </footer>
+            <!-- Section: Manage Orders -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">Manage Orders</h2>
+                <table class="w-full bg-white shadow-md rounded">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="px-4 py-2">Order ID</th>
+                            <th class="px-4 py-2">Customer</th>
+                            <th class="px-4 py-2">Total</th>
+                            <th class="px-4 py-2">Status</th>
+                            <th class="px-4 py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% orders.forEach(order => { %>
+                        <tr class="border-b">
+                            <td class="px-4 py-2"><%= order.id %></td>
+                            <td class="px-4 py-2"><%= order.customer %></td>
+                            <td class="px-4 py-2">$<%= order.total %></td>
+                            <td class="px-4 py-2"><%= order.status %></td>
+                            <td class="px-4 py-2">
+                                <a href="/admin/orders/view/<%= order.id %>"
+                                    class="bg-blue-500 text-white px-2 py-1 rounded">View</a>
+                                <form action="/api/admin/orders/update/<%= order.id %>" method="POST"
+                                    class="inline-block">
+                                    <select name="status" class="bg-gray-200 p-1 rounded">
+                                        <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>
+                                            Pending</option>
+                                        <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %>>
+                                            Shipped</option>
+                                        <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>
+                                            Delivered</option>
+                                    </select>
+                                    <button type="submit"
+                                        class="bg-green-500 text-white px-2 py-1 rounded">Update</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
 </body>
 
 </html>
